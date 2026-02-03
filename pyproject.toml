@@ -1,0 +1,81 @@
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "relihttp"
+version = "0.1.0"
+description = "A production-ready, reliable HTTP client for Python."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+  { name = "Neo" }
+]
+keywords = ["http", "client", "retry", "timeout", "circuit-breaker", "rate-limit", "idempotency", "tracing"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Internet :: WWW/HTTP",
+  "Topic :: Software Development :: Libraries",
+  "Typing :: Typed",
+]
+
+dependencies = [
+  "requests>=2.28",
+  "typing_extensions>=4.6; python_version < '3.11'",
+]
+
+[project.optional-dependencies]
+# Optional async transport support (planned).
+async = [
+  "aiohttp>=3.8",
+]
+dev = [
+  "pytest>=7.4",
+  "pytest-cov>=4.1",
+  "ruff>=0.6",
+  "mypy>=1.8",
+  "types-requests>=2.31",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourname/relihttp"
+Repository = "https://github.com/yourname/relihttp"
+Issues = "https://github.com/yourname/relihttp/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["relihttp"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-q"
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+no_implicit_optional = true
+check_untyped_defs = true

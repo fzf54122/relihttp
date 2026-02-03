@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <!-- 背景圆环 -->
+  <circle cx="100" cy="100" r="90" fill="#f8fafc" stroke="#2563eb" stroke-width="4"/>
+  
+  <!-- 连接线条 - 左侧 -->
+  <line x1="60" y1="100" x2="90" y2="100" stroke="#2563eb" stroke-width="8" stroke-linecap="round"/>
+  
+  <!-- 连接线条 - 右侧 -->
+  <line x1="110" y1="100" x2="140" y2="100" stroke="#2563eb" stroke-width="8" stroke-linecap="round"/>
+  
+  <!-- 左侧服务器 -->
+  <rect x="40" y="70" width="40" height="60" rx="4" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2"/>
+  <rect x="50" y="85" width="20" height="5" rx="2" fill="#60a5fa"/>
+  <rect x="50" y="95" width="20" height="5" rx="2" fill="#60a5fa"/>
+  <rect x="50" y="105" width="20" height="5" rx="2" fill="#60a5fa"/>
+  <rect x="50" y="115" width="20" height="5" rx="2" fill="#60a5fa"/>
+  
+  <!-- 右侧服务器 -->
+  <rect x="120" y="70" width="40" height="60" rx="4" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2"/>
+  <rect x="130" y="85" width="20" height="5" rx="2" fill="#60a5fa"/>
+  <rect x="130" y="95" width="20" height="5" rx="2" fill="#60a5fa"/>
+  <rect x="130" y="105" width="20" height="5" rx="2" fill="#60a5fa"/>
+  <rect x="130" y="115" width="20" height="5" rx="2" fill="#60a5fa"/>
+  
+  <!-- 中间圆形 - 表示可靠性 -->
+  <circle cx="100" cy="100" r="25" fill="#22c55e" stroke="#15803d" stroke-width="3"/>
+  
+  <!-- 盾牌图标 -->
+  <path d="M85 90 L115 90 L115 110 L105 120 L95 120 L85 110 Z" fill="#ffffff"/>
+  <rect x="95" y="95" width="10" height="15" fill="#15803d"/>
+  <circle cx="100" cy="102" r="3" fill="#ffffff"/>
+  
+  <!-- 项目名称 -->
+  <text x="100" y="170" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1e293b" text-anchor="middle">relihttp</text>
+</svg>
