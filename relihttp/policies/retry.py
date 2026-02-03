@@ -7,6 +7,7 @@ from typing import Iterable, Optional, Set
 import requests
 
 from .base import Policy
+from ..exceotions import TransportError
 from ..models import Context
 from ..utils import exponential_backoff, add_jitter
 
@@ -44,6 +45,18 @@ class RetryPolicy(Policy):
 
         # network errors
         if ctx.error is not None:
+            if isinstance(ctx.error, TransportError):
+                if ctx.error.status_code in self.retry_on_status:
+                    return True
+                if ctx.error.status_code is None:
+                    return True
+                cause = getattr(ctx.error, "__cause__", None)
+                if isinstance(
+                    cause,
+                    (requests.Timeout, requests.ConnectionError, requests.RequestException),
+                ):
+                    return True
+                return False
             return isinstance(
                 ctx.error,
                 (requests.Timeout, requests.ConnectionError, requests.RequestException),

@@ -1,3 +1,5 @@
+from typing import Optional
+
 
 class TransportError(Exception):
     """统一的 HTTP 传输异常"""
@@ -6,10 +8,10 @@ class TransportError(Exception):
         self,
         message: str,
         *,
-        method: str | None = None,
-        url: str | None = None,
-        status_code: int | None = None,
-        elapsed_ms: int | None = None,
+        method: Optional[str] = None,
+        url: Optional[str] = None,
+        status_code: Optional[int] = None,
+        elapsed_ms: Optional[int] = None,
     ):
         self.method = method
         self.url = url

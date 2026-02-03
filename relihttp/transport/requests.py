@@ -3,8 +3,6 @@
 # @Author  : fzf
 # @FileName: request.py
 # @Software: PyCharm
-from __future__ import annotations
-
 import requests
 from requests import exceptions
 from typing import Optional
@@ -37,21 +35,50 @@ class RequestsTransport(Transport):
             r.raise_for_status()
 
         except exceptions.Timeout as e:
-            raise TransportError(f"timeout | {req.method} {req.url}") from e
+            elapsed_ms = now_ms() - start
+            raise TransportError(
+                "timeout",
+                method=req.method,
+                url=req.url,
+                elapsed_ms=elapsed_ms,
+            ) from e
 
         except exceptions.ConnectionError as e:
-            raise TransportError(f"connection error | {req.method} {req.url}") from e
+            elapsed_ms = now_ms() - start
+            raise TransportError(
+                "connection error",
+                method=req.method,
+                url=req.url,
+                elapsed_ms=elapsed_ms,
+            ) from e
 
         except exceptions.HTTPError as e:
             resp = getattr(e, "response", None)
             if resp is not None:
+                elapsed_ms = now_ms() - start
                 raise TransportError(
-                    f"http error | {req.method} {req.url} | {resp.status_code} | {resp.text[:300]}"
+                    f"http error | {resp.text[:300]}",
+                    method=req.method,
+                    url=req.url,
+                    status_code=resp.status_code,
+                    elapsed_ms=elapsed_ms,
                 ) from e
-            raise TransportError(f"http error | {req.method} {req.url}") from e
+            elapsed_ms = now_ms() - start
+            raise TransportError(
+                "http error",
+                method=req.method,
+                url=req.url,
+                elapsed_ms=elapsed_ms,
+            ) from e
 
         except exceptions.RequestException as e:
-            raise TransportError(f"request error | {req.method} {req.url}") from e
+            elapsed_ms = now_ms() - start
+            raise TransportError(
+                "request error",
+                method=req.method,
+                url=req.url,
+                elapsed_ms=elapsed_ms,
+            ) from e
         end = now_ms()
         return Response(
             status_code=r.status_code,

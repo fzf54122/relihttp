@@ -5,7 +5,7 @@
 # @Software: PyCharm
 import asyncio
 
-from relihttp.async_client import AsyncClient
+from relihttp.client.AsyncClient import AsyncClient
 from relihttp.models import Context, Response
 from relihttp.transport.async_base import AsyncTransport
 
