@@ -16,9 +16,6 @@
 </div>
 
 ## 🌟 Why choose relihttp?
-<div align="center">
-  <img src="./assets/img/relihttp.png" alt="relihttp Logo" width="792" height="397" >
-</div>
 
 relihttp is a lightweight HTTP client built on `requests` with reliability features enabled by default. It provides a policy-based design that makes behaviors easy to customize or replace.
 
