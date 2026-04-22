@@ -185,9 +185,10 @@ twine upload --repository testpypi dist/*
 ## 🚀 Quick Start (Sync)
 
 ```python
-from relihttp import Client
+from relihttp import AbstractClient, ClientTypeEnum
 
-client = Client(
+client = AbstractClient.create_client(
+    ClientTypeEnum.SYNC,
     base_url="https://api.example.com",
     timeout=3.0,
     retry="safe",
@@ -209,19 +210,53 @@ client.post("/pay", json={"amount": 10}, timeout=1.5, max_retries=1)
 
 ```python
 import asyncio
-from relihttp import AsyncClient
+from relihttp import AbstractClient, ClientTypeEnum
 
 async def main() -> None:
-    async with AsyncClient(
+    client = AbstractClient.create_client(
+        ClientTypeEnum.ASYNC,
         base_url="https://api.example.com",
         timeout=3.0,
         retry="safe",
         max_retries=3,
-    ) as client:
+    )
+    async with client:
         resp = await client.get("/users")
         print(resp.text)
 
 asyncio.run(main())
+```
+
+## 🎯 AbstractClient Usage
+
+`AbstractClient` provides a factory method to create either sync or async clients based on the specified mode:
+
+```python
+from relihttp import AbstractClient, ClientTypeEnum
+
+# Create a sync client
+sync_client = AbstractClient.create_client(
+    ClientTypeEnum.SYNC,
+    base_url="https://api.example.com",
+    timeout=3.0,
+    max_retries=3
+)
+
+# Create an async client
+async def main() -> None:
+    async_client = AbstractClient.create_client(
+        ClientTypeEnum.ASYNC,
+        base_url="https://api.example.com",
+        timeout=3.0,
+        max_retries=3
+    )
+    async with async_client:
+        resp = await async_client.get("/users")
+        print(resp.text)
+
+# Usage example
+sync_response = sync_client.get("/health")
+print(sync_response.status_code)
 ```
 
 ## 🔧 Usage Examples
@@ -229,9 +264,12 @@ asyncio.run(main())
 ### Sync Client (Basic)
 
 ```python
-from relihttp import Client
+from relihttp import AbstractClient, ClientTypeEnum
 
-client = Client(base_url="https://api.example.com")
+client = AbstractClient.create_client(
+    ClientTypeEnum.SYNC,
+    base_url="https://api.example.com"
+)
 resp = client.get("/health")
 print(resp.status_code)
 ```
@@ -239,7 +277,7 @@ print(resp.status_code)
 ### Sync Client (Custom Policies)
 
 ```python
-from relihttp import Client
+from relihttp import AbstractClient, ClientTypeEnum
 from relihttp.policies.circuit import CircuitBreakerPolicy
 from relihttp.policies.idempotency import IdempotencyPolicy
 from relihttp.policies.tracing import TracingPolicy
@@ -248,7 +286,8 @@ from relihttp.policies.retry import RetryPolicy
 from relihttp.policies.logger import LoggingPolicy
 from relihttp.policies.rate_limit import RateLimitPolicy
 
-client = Client(
+client = AbstractClient.create_client(
+    ClientTypeEnum.SYNC,
     policies=[
         TimeoutPolicy(timeout=3.0),
         RetryPolicy(max_retries=3, retry="safe"),
@@ -268,10 +307,11 @@ print(resp.status_code)
 
 ```python
 import asyncio
-from relihttp import AsyncClient
+from relihttp import AbstractClient, ClientTypeEnum
 
 async def main() -> None:
-    async with AsyncClient() as client:
+    client = AbstractClient.create_client(ClientTypeEnum.ASYNC)
+    async with client:
         resp = await client.get("https://example.com")
         print(resp.status_code)
 
@@ -282,10 +322,14 @@ asyncio.run(main())
 
 ```python
 import asyncio
-from relihttp import AsyncClient
+from relihttp import AbstractClient, ClientTypeEnum
 
 async def main() -> None:
-    async with AsyncClient(base_url="https://api.example.com") as client:
+    client = AbstractClient.create_client(
+        ClientTypeEnum.ASYNC,
+        base_url="https://api.example.com"
+    )
+    async with client:
         resp = await client.post("/pay", json={"amount": 10}, timeout=1.5, max_retries=1)
         print(resp.text)
 
@@ -296,12 +340,16 @@ asyncio.run(main())
 
 ```python
 import asyncio
-from relihttp import AsyncClient
+from relihttp import AbstractClient, ClientTypeEnum
 from relihttp.transport.aiohttp import AiohttpTransport
 
 async def main() -> None:
     transport = AiohttpTransport()
-    async with AsyncClient(transport=transport) as client:
+    client = AbstractClient.create_client(
+        ClientTypeEnum.ASYNC,
+        transport=transport
+    )
+    async with client:
         resp = await client.get("https://example.com")
         print(resp.status_code)
 
@@ -313,9 +361,10 @@ asyncio.run(main())
 Enable additional reliability features with simple flags:
 
 ```python
-from relihttp import Client
+from relihttp import AbstractClient, ClientTypeEnum
 
-client = Client(
+client = AbstractClient.create_client(
+    ClientTypeEnum.SYNC,
     base_url="https://api.example.com",
     circuit_breaker=True,
     idempotency=True,
@@ -326,13 +375,14 @@ client = Client(
 ### Circuit Breaker (Advanced)
 
 ```python
-from relihttp import Client
+from relihttp import AbstractClient, ClientTypeEnum
 from relihttp.policies.circuit import CircuitBreakerPolicy
 from relihttp.policies.timeout import TimeoutPolicy
 from relihttp.policies.retry import RetryPolicy
 from relihttp.policies.logger import LoggingPolicy
 
-client = Client(
+client = AbstractClient.create_client(
+    ClientTypeEnum.SYNC,
     policies=[
         TimeoutPolicy(timeout=3.0),
         RetryPolicy(max_retries=3, retry="safe"),
@@ -345,13 +395,14 @@ client = Client(
 ### Idempotency Key (Advanced)
 
 ```python
-from relihttp import Client
+from relihttp import AbstractClient, ClientTypeEnum
 from relihttp.policies.idempotency import IdempotencyPolicy
 from relihttp.policies.timeout import TimeoutPolicy
 from relihttp.policies.retry import RetryPolicy
 from relihttp.policies.logger import LoggingPolicy
 
-client = Client(
+client = AbstractClient.create_client(
+    ClientTypeEnum.SYNC,
     policies=[
         TimeoutPolicy(timeout=3.0),
         RetryPolicy(max_retries=3, retry="safe"),
@@ -364,13 +415,14 @@ client = Client(
 ### Tracing & Request ID (Advanced)
 
 ```python
-from relihttp import Client
+from relihttp import AbstractClient, ClientTypeEnum
 from relihttp.policies.tracing import TracingPolicy
 from relihttp.policies.timeout import TimeoutPolicy
 from relihttp.policies.retry import RetryPolicy
 from relihttp.policies.logger import LoggingPolicy
 
-client = Client(
+client = AbstractClient.create_client(
+    ClientTypeEnum.SYNC,
     policies=[
         TimeoutPolicy(timeout=3.0),
         RetryPolicy(max_retries=3, retry="safe"),
@@ -387,10 +439,11 @@ client = Client(
  # pip install relihttp[async]
  
 import asyncio
-from relihttp import AsyncClient
+from relihttp import AbstractClient, ClientTypeEnum
 
 async def main() -> None:
-    async with AsyncClient() as client:
+    client = AbstractClient.create_client(ClientTypeEnum.ASYNC)
+    async with client:
         resp = await client.get("https://example.com")
         print(resp.status_code)
 
@@ -407,12 +460,13 @@ Retries are triggered for network errors from `requests` and for HTTP status cod
 Custom policy example:
 
 ```python
-from relihttp import Client
+from relihttp import AbstractClient, ClientTypeEnum
 from relihttp.policies.retry import RetryPolicy
 from relihttp.policies.timeout import TimeoutPolicy
 from relihttp.policies.logger import LoggingPolicy
 
-client = Client(
+client = AbstractClient.create_client(
+    ClientTypeEnum.SYNC,
     policies=[
         TimeoutPolicy(timeout=2.0),
         RetryPolicy(max_retries=5, retry="all", retry_on_status=[500, 502, 503]),
@@ -427,13 +481,14 @@ client = Client(
 You can switch to `raise` mode to fail fast; it raises `RateLimitedError`.
 
 ```python
-from relihttp import Client
+from relihttp import AbstractClient, ClientTypeEnum
 from relihttp.policies.rate_limit import RateLimitPolicy
 from relihttp.policies.timeout import TimeoutPolicy
 from relihttp.policies.retry import RetryPolicy
 from relihttp.policies.logger import LoggingPolicy
 
-client = Client(
+client = AbstractClient.create_client(
+    ClientTypeEnum.SYNC,
     policies=[
         TimeoutPolicy(timeout=3.0),
         RetryPolicy(max_retries=3),
@@ -465,8 +520,12 @@ The default transport is `RequestsTransport`, built on `requests.Session`. You c
 ```
 relihttp/
   __init__.py                 # Package initialization
-  client.py                   # Main Client class
-  async_client.py             # Async Client (AsyncIO)
+  client/                     # Client implementations
+    __init__.py               # Client package initialization
+    BaseClient.py             # Base client class
+    SyncClient.py             # Sync Client class
+    AsyncClient.py            # Async Client (AsyncIO)
+    __init__.py               # Exports AbstractClient and ClientTypeEnum
   models.py                   # Data models
   transport/                  # Transport layer implementations
     base.py                  # Transport base class

@@ -15,6 +15,7 @@ class BaseClient:
     def __init__(
         self,
         base_url: str = "",
+        headers: Optional[Dict[str, str]] = None,
         timeout: float = 3.0,
         retry: str = "safe",
         max_retries: int = 3,
@@ -27,6 +28,7 @@ class BaseClient:
         logger:bool = False,
     ):
         self.base_url = base_url.rstrip("/")
+        self.headers = headers or {}
         self.transport = transport or RequestsTransport()
 
         default_policies: List[Policy] = [

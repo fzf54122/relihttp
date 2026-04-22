@@ -41,7 +41,7 @@ class AsyncClient(BaseClient):
             method=method.upper(),
             url=full_url,
             params=params,
-            headers=headers or {},
+            headers=self.headers or headers or {},
             data=data,
             json=json,
         )

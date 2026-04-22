@@ -58,7 +58,7 @@ Alpha (v0.1.0)，API 可能变化。
 #### 使用示例
 ```python
 import logging
-from relihttp import Client
+from relihttp import AbstractClient, ClientTypeEnum
 
 # 配置日志
 logging.basicConfig(
@@ -66,8 +66,13 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 
-client = Client()
-response = client.get("https://api.example.com/users")
+client = AbstractClient.create_client(
+    ClientTypeEnum.SYNC,
+    base_url="https://api.example.com",
+    timeout=3.0,
+    max_retries=3
+)
+response = client.get("/users")
 ```
 
 #### 日志输出
@@ -188,9 +193,10 @@ twine upload --repository testpypi dist/*
 ## 🚀 快速开始
 
 ```python
-from relihttp import Client
+from relihttp import AbstractClient, ClientTypeEnum
 
-client = Client(
+client = AbstractClient.create_client(
+    ClientTypeEnum.SYNC,
     base_url="https://api.example.com",
     timeout=3.0,
     retry="safe",
@@ -208,14 +214,47 @@ print(resp.json())
 client.post("/pay", json={"amount": 10}, timeout=1.5, max_retries=1)
 ```
 
+## 🎯 AbstractClient 使用
+
+`AbstractClient` 提供了一个工厂方法，可以根据指定的模式创建同步或异步客户端：
+
+```python
+from relihttp import AbstractClient, ClientTypeEnum
+
+# 创建同步客户端
+sync_client = AbstractClient.create_client(
+    ClientTypeEnum.SYNC,
+    base_url="https://api.example.com",
+    timeout=3.0,
+    max_retries=3
+)
+
+# 创建异步客户端
+async def main() -> None:
+    async_client = AbstractClient.create_client(
+        ClientTypeEnum.ASYNC,
+        base_url="https://api.example.com",
+        timeout=3.0,
+        max_retries=3
+    )
+    async with async_client:
+        resp = await async_client.get("/users")
+        print(resp.text)
+
+# 使用示例
+sync_response = sync_client.get("/health")
+print(sync_response.status_code)
+```
+
 ## 🔧 配置说明
 
 通过简单开关启用扩展能力：
 
 ```python
-from relihttp import Client
+from relihttp import AbstractClient, ClientTypeEnum
 
-client = Client(
+client = AbstractClient.create_client(
+    ClientTypeEnum.SYNC,
     base_url="https://api.example.com",
     circuit_breaker=True,
     idempotency=True,
@@ -226,7 +265,7 @@ client = Client(
 ### 完整策略示例
 
 ```python
-from relihttp import Client
+from relihttp import AbstractClient, ClientTypeEnum
 from relihttp.policies.circuit import CircuitBreakerPolicy
 from relihttp.policies.idempotency import IdempotencyPolicy
 from relihttp.policies.tracing import TracingPolicy
@@ -235,7 +274,8 @@ from relihttp.policies.retry import RetryPolicy
 from relihttp.policies.logger import LoggingPolicy
 from relihttp.policies.rate_limit import RateLimitPolicy
 
-client = Client(
+client = AbstractClient.create_client(
+    ClientTypeEnum.SYNC,
     policies=[
         TimeoutPolicy(timeout=3.0),
         RetryPolicy(max_retries=3, retry="safe"),
@@ -251,13 +291,14 @@ client = Client(
 ### 熔断器（进阶）
 
 ```python
-from relihttp import Client
+from relihttp import AbstractClient, ClientTypeEnum
 from relihttp.policies.circuit import CircuitBreakerPolicy
 from relihttp.policies.timeout import TimeoutPolicy
 from relihttp.policies.retry import RetryPolicy
 from relihttp.policies.logger import LoggingPolicy
 
-client = Client(
+client = AbstractClient.create_client(
+    ClientTypeEnum.SYNC,
     policies=[
         TimeoutPolicy(timeout=3.0),
         RetryPolicy(max_retries=3, retry="safe"),
@@ -270,13 +311,14 @@ client = Client(
 ### 幂等键（进阶）
 
 ```python
-from relihttp import Client
+from relihttp import AbstractClient, ClientTypeEnum
 from relihttp.policies.idempotency import IdempotencyPolicy
 from relihttp.policies.timeout import TimeoutPolicy
 from relihttp.policies.retry import RetryPolicy
 from relihttp.policies.logger import LoggingPolicy
 
-client = Client(
+client = AbstractClient.create_client(
+    ClientTypeEnum.SYNC,
     policies=[
         TimeoutPolicy(timeout=3.0),
         RetryPolicy(max_retries=3, retry="safe"),
@@ -289,13 +331,14 @@ client = Client(
 ### 追踪与请求 ID（进阶）
 
 ```python
-from relihttp import Client
+from relihttp import AbstractClient, ClientTypeEnum
 from relihttp.policies.tracing import TracingPolicy
 from relihttp.policies.timeout import TimeoutPolicy
 from relihttp.policies.retry import RetryPolicy
 from relihttp.policies.logger import LoggingPolicy
 
-client = Client(
+client = AbstractClient.create_client(
+    ClientTypeEnum.SYNC,
     policies=[
         TimeoutPolicy(timeout=3.0),
         RetryPolicy(max_retries=3, retry="safe"),
@@ -312,10 +355,11 @@ client = Client(
  # pip install relihttp[async]
  
 import asyncio
-from relihttp import AsyncClient
+from relihttp import AbstractClient, ClientTypeEnum
 
 async def main() -> None:
-    async with AsyncClient() as client:
+    client = AbstractClient.create_client(ClientTypeEnum.ASYNC)
+    async with client:
         resp = await client.get("https://example.com")
         print(resp.status_code)
 
@@ -332,12 +376,13 @@ asyncio.run(main())
 自定义策略示例：
 
 ```python
-from relihttp import Client
+from relihttp import AbstractClient, ClientTypeEnum
 from relihttp.policies.retry import RetryPolicy
 from relihttp.policies.timeout import TimeoutPolicy
 from relihttp.policies.logger import LoggingPolicy
 
-client = Client(
+client = AbstractClient.create_client(
+    ClientTypeEnum.SYNC,
     policies=[
         TimeoutPolicy(timeout=2.0),
         RetryPolicy(max_retries=5, retry="all", retry_on_status=[500, 502, 503]),
@@ -352,13 +397,14 @@ client = Client(
 切换为 `raise` 模式可快速失败，抛出 `RateLimitedError`。
 
 ```python
-from relihttp import Client
+from relihttp import AbstractClient, ClientTypeEnum
 from relihttp.policies.rate_limit import RateLimitPolicy
 from relihttp.policies.timeout import TimeoutPolicy
 from relihttp.policies.retry import RetryPolicy
 from relihttp.policies.logger import LoggingPolicy
 
-client = Client(
+client = AbstractClient.create_client(
+    ClientTypeEnum.SYNC,
     policies=[
         TimeoutPolicy(timeout=3.0),
         RetryPolicy(max_retries=3),
@@ -390,8 +436,12 @@ client = Client(
 ```
 relihttp/
   __init__.py                 # 包初始化
-  client.py                   # 主 Client 类
-  async_client.py             # 异步 Client（AsyncIO）
+  client/                     # 客户端实现
+    __init__.py               # 客户端包初始化
+    BaseClient.py             # 基础客户端类
+    SyncClient.py             # 同步客户端类
+    AsyncClient.py            # 异步客户端（AsyncIO）
+    __init__.py               # 导出 AbstractClient 和 ClientTypeEnum
   models.py                   # 数据模型
   transport/                  # 传输层实现
     base.py                  # 传输层基类

@@ -1239,7 +1239,7 @@ wheels = [
 
 [[package]]
 name = "relihttp"
-version = "0.1.0"
+version = "0.1.2"
 source = { editable = "." }
 dependencies = [
     { name = "requests" },
@@ -1265,7 +1265,7 @@ requires-dist = [
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.8" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.4" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1" },
-    { name = "requests", specifier = ">=2.28" },
+    { name = "requests", specifier = ">=2.32.5" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6" },
     { name = "types-requests", marker = "extra == 'dev'", specifier = ">=2.31" },
     { name = "typing-extensions", marker = "python_full_version < '3.11'", specifier = ">=4.6" },

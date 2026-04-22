@@ -1,4 +1,4 @@
-__all__ = ["SyncClient", "AsyncClient", "ClientTypeEnum", "AbstractClient"]
+__all__ = ["ClientTypeEnum", "AbstractClient"]
 
 from .AsyncClient import AsyncClient
 from .SyncClient import SyncClient
